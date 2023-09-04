@@ -1,6 +1,14 @@
 version: "3.4"
 
 services:
+  redis:
+    container_name: ${IMAGES_PREFIX:-}container_redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data/redis
+
   php:
     image: ${IMAGES_PREFIX:-}app-php
     restart: unless-stopped
@@ -23,6 +31,8 @@ services:
       MERCURE_URL: ${CADDY_MERCURE_URL:-http://caddy/.well-known/mercure}
       MERCURE_PUBLIC_URL: https://${SERVER_NAME:-localhost}/.well-known/mercure
       MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+    links:
+      - redis
 
   caddy:
     image: ${IMAGES_PREFIX:-}app-caddy
@@ -55,9 +65,27 @@ services:
 ###> symfony/mercure-bundle ###
 ###< symfony/mercure-bundle ###
 
+###> doctrine/doctrine-bundle ###
+  database:
+    image: postgres:${POSTGRES_VERSION:-15}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      # You should definitely change the password in production
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/db/data:/var/lib/postgresql/data:rw
+###< doctrine/doctrine-bundle ###
+
 volumes:
   php_socket:
   caddy_data:
   caddy_config:
 ###> symfony/mercure-bundle ###
 ###< symfony/mercure-bundle ###
+
+###> doctrine/doctrine-bundle ###
+  database_data:
+###< doctrine/doctrine-bundle ###

@@ -1,3 +1,20 @@
+start:docker compose up
+stop:docker compose down
+    if there are problems with first start
+    , try to start it up `docker compose up`
+    then while running, run once `docker compose down --remove-orphans`
+    then run once `docker compose up --build --no-cache`
+    after that on the next `docker compose up --pull --wait` it should work :)
+
+URL:`https://localhost` nothing to see here
+accept certificate
+docker exec `docker exec -it thehub-php-1 sh`
+command: `php bin/console importPStars`
+
+api platform to view Data: `https://localhost/api`
+tests: `php bin/phpunit`
+
+
 # Symfony Docker
 
 A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework, with full [HTTP/2](https://symfony.com/doc/current/weblink.html), HTTP/3 and HTTPS support.
